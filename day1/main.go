@@ -96,11 +96,16 @@ func part2(input string) int {
 	fmt.Println(parsed)
 
 	var sum int
-	numberNames := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
-	numberMap := make(map[string]int)
-
-	for i := 1; i < 10; i++ {
-		numberMap[numberNames[i-1]] = i
+	numberMap := map[string]int{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+		"four":  4,
+		"five":  5,
+		"six":   6,
+		"seven": 7,
+		"eight": 8,
+		"nine":  9,
 	}
 
 	for _, line := range parsed {
