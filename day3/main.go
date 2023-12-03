@@ -1,6 +1,6 @@
 // started        9:00
 // finished part1 , 11:48 (out 1h)
-// finished part2 , 'go run' time s, run time after 'go build' s
+// finished part2 , 11:56
 
 package main
 
@@ -152,7 +152,99 @@ func part1(input string) int {
 }
 
 func part2(input string) int {
-	return 0
+	parsed := parseInput(input)
+	fmt.Println(parsed)
+
+	var numbers [][]Number
+	var symbols []Symbol
+	specialSymbols := []rune{'*', '+', '#', '/', '$', '@', '=', '&', '%', '-', '!', '?', '^', '~', '<', '>', '|', '(', ')', '[', ']', '{', '}'}
+
+	for yIndex, line := range parsed {
+		var numberRow []Number
+
+		for y := 0; y < len(line); y++ {
+			_ = yIndex
+
+			//get numbers
+			if unicode.IsDigit(rune(line[y])) {
+				startingPos := y
+
+				for i := startingPos + 1; i < len(line); i++ {
+					if unicode.IsDigit(rune(line[i])) {
+						if (i + 1) == len(line) {
+							number := Number{value: stringToInt(line[startingPos:]), startingPosition: startingPos, endPosition: i}
+							numberRow = append(numberRow, number)
+							y = i
+							break
+						}
+						continue
+					} else {
+						number := Number{value: stringToInt(line[startingPos:i]), startingPosition: startingPos, endPosition: i - 1}
+						numberRow = append(numberRow, number)
+						y = i
+						break
+					}
+				}
+			}
+
+			//get symbols
+			if slices.Contains(specialSymbols, rune(line[y])) {
+				symbol := Symbol{symbol: string(line[y]), positionX: y, positionY: yIndex}
+				symbols = append(symbols, symbol)
+			}
+		}
+
+		numbers = append(numbers, numberRow)
+	}
+
+	fmt.Printf("Numbers:%v \nSymbols: %v\n", numbers, symbols)
+
+	sum := 0
+
+	for _, symbol := range symbols {
+
+		//check upper line
+		var adjacentNumbers []int
+
+		if symbol.symbol != "*" {
+			continue
+		}
+
+		if symbol.positionY != 0 {
+			for _, number := range numbers[symbol.positionY-1] {
+				if number.startingPosition == symbol.positionX || number.startingPosition == symbol.positionX-1 || number.startingPosition == symbol.positionX+1 ||
+					number.endPosition == symbol.positionX || number.endPosition == symbol.positionX-1 || number.endPosition == symbol.positionX+1 {
+					adjacentNumbers = append(adjacentNumbers, number.value)
+				}
+			}
+		}
+
+		//check current line
+		for _, number := range numbers[symbol.positionY] {
+			if number.startingPosition-1 == symbol.positionX || number.startingPosition+1 == symbol.positionX ||
+				number.endPosition-1 == symbol.positionX || number.endPosition+1 == symbol.positionX {
+				adjacentNumbers = append(adjacentNumbers, number.value)
+			}
+		}
+
+		//check lower line
+		if symbol.positionY != len(numbers) {
+			for _, number := range numbers[symbol.positionY+1] {
+				if number.startingPosition == symbol.positionX || number.startingPosition == symbol.positionX-1 || number.startingPosition == symbol.positionX+1 ||
+					number.endPosition == symbol.positionX || number.endPosition == symbol.positionX-1 || number.endPosition == symbol.positionX+1 {
+					adjacentNumbers = append(adjacentNumbers, number.value)
+				}
+
+			}
+		}
+
+		if len(adjacentNumbers) == 2 {
+			sum += adjacentNumbers[0] * adjacentNumbers[1]
+		}
+
+	}
+
+	return sum
 }
 
 func parseInput(input string) (parsedInput []string) {
