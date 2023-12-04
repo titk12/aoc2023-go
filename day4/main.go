@@ -1,7 +1,6 @@
 // started        ;
-// finished part1 , 'go run' time s, run time after 'go build' s
-// finished part2 , 'go run' time s, run time after 'go build' s
-
+// finished part1 20 min
+// finished part2 43 min
 package main
 
 import (
